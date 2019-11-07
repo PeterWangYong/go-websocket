@@ -32,10 +32,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		goto ERR
 	}
 
-	if conn, err = impl.InitConnection(wsConn); err != nil {
-		goto ERR
-	}
-
 	go func() {
 		var (
 			err error
