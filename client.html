@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>go-websocket</title>
+    <style>
+        td {
+            vertical-align: top;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+
+            <ul>
+                <li>点击Open创建一个websocket连接到服务器</li>
+                <li>点击Send发送一条消息到服务器</li>
+                <li>点击Close关闭连接</li>
+            </ul>
+
+            <form>
+                <button id="open">Open</button>
+                <button id="close">Close</button>
+                <label for="input">消息内容:</label>
+                <input id="input" type="text" value="Hello world!">
+                <button id="send">Send</button>
+            </form>
+        </td>
+        <td>
+            <div id="output"></div>
+        </td>
+    </tr>
+</table>
+
+<script>
+    window.addEventListener("load", function (evt) {
+        let output = document.getElementById("output");
+        let input = document.getElementById("input");
+        let ws;
+        let print = function (message) {
+            let d = document.createElement("div");
+            d.innerHTML = message;
+            output.append(d)
+        };
+        document.getElementById("open").onclick = function (evt) {
+            if (ws) {
+                return false;
+            }
+            ws = new WebSocket("ws://localhost:8080/ws");
+            ws.onopen = function (evt) {
+                print("Open Connection");
+            };
+            ws.onclose = function (evt) {
+                print("Close Connection");
+                ws = null;
+            };
+            ws.onmessage = function (evt) {
+                print("Response: " + evt.data);
+            };
+            ws.onerror = function (evt) {
+                print("Error: " + evt.data)
+            };
+            return false;
+        };
+        document.getElementById("send").onclick = function (evt) {
+            if (!ws) {
+                return false;
+            }
+            print("Send: " + input.value);
+            ws.send(input.value);
+            return false;
+        };
+        document.getElementById("close").onclick = function (evt) {
+            if (!ws) {
+                return false;
+            }
+            ws.close();
+            return false;
+        };
+    });
+</script>
+</body>
+</html>
